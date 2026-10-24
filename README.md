@@ -239,14 +239,13 @@ The whole project runs as **one web service**: in production the Express server 
 
 ### 2. Create the first admin (do NOT run the sample seed)
 The sample seed has public passwords (`Admin@123`) and wipes the database, so it refuses to run when `NODE_ENV=production`.
-Create a real admin instead, from your PC, pointing at Atlas (PowerShell):
-```powershell
-$env:MONGO_URI = 'mongodb+srv://<user>:<password>@<cluster>.mongodb.net/karunya_bus_portal?retryWrites=true&w=majority'
-$env:ADMIN_NAME = 'Transport Office'
-$env:ADMIN_EMAIL = 'transport@karunya.edu.in'
-$env:ADMIN_PASSWORD = 'choose-a-Strong#Password1'
+Create a real admin instead, from your PC, pointing at Atlas:
+```bash
 npm.cmd run create-admin
 ```
+It asks for the Atlas connection string, the admin's name and email, and a password (typed hidden, twice). It prints
+which database host it connected to, so you can confirm it is Atlas and not your local database. Password rule:
+8+ characters with uppercase, lowercase, a number and a special character.
 Then add the real buses, routes and schedules from the **Operations** page after you log in.
 
 ### 3. Put the code on GitHub
