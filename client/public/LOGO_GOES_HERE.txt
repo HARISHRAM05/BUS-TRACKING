@@ -1,0 +1,7 @@
+Put the official Karunya logo in THIS folder, named exactly:
+
+    karunya-logo.png
+
+It will appear automatically in the navbar and on the landing page.
+(Until then a plain bus icon is shown as a placeholder.)
+See src/components/LogoSlot.jsx if you want to use a different file name or size.

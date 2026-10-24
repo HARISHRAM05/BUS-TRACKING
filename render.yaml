@@ -1,0 +1,25 @@
+# Render "Blueprint": one free web service that runs the API and also serves the React website.
+# Database: MongoDB Atlas (free M0). See "Deployment" in README.md for the step-by-step guide.
+services:
+  - type: web
+    name: karunya-bus-portal
+    runtime: node
+    plan: free
+    buildCommand: npm run render-build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI # paste your Atlas connection string in the Render dashboard
+        sync: false
+      - key: ADMIN_SIGNUP_CODE # secret code needed to register as Admin - choose your own
+        sync: false
+      - key: JWT_SECRET # Render generates a long random value
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: SIMULATE_BUS_TRACKING # demo bus movement; set to false when real GPS data exists
+        value: "true"
