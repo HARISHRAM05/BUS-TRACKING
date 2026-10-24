@@ -4,7 +4,7 @@
  * What it does:
  *   1. connects to a SEPARATE test database (never your real data),
  *   2. seeds it with the sample data,
- *   3. starts the real Express app on a random free port (plus the bus simulator),
+ *   3. starts the real Express app on a random free port,
  *   4. runs every suite in order and exits with code 1 if any check failed.
  *
  * MongoDB must be running. Override the test database with TEST_MONGO_URI (its name must contain "test").
@@ -42,7 +42,6 @@ const SUITES = ['api', 'map', 'security'];
 
   const server = app.listen(0);
   const base = `http://127.0.0.1:${server.address().port}/api`;
-  require('../services/trackingSimulator').start();
 
   const client = createClient(base);
   let failed = 0;

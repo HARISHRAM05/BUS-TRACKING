@@ -32,13 +32,16 @@ College bus Tacking/
 │   ├── routes/             # Express routers (URL -> middleware -> controller)
 │   ├── middleware/         # auth (protect/authorize), validate, errorHandler
 │   ├── validators/         # express-validator rules for every endpoint
-│   ├── services/           # trackingSimulator.js (DEMO bus positions for the map)
+│   ├── services/           # busPosition.js (GPS or DEMO bus positions for the map)
 │   ├── utils/              # ApiError, asyncHandler, respond, logActivity, escapeRegex
 │   ├── tests/              # automated API tests (npm test)
 │   ├── seed.js             # SAMPLE data loader
 │   ├── app.js              # Express app (middleware + routes)
 │   ├── server.js           # entry point: connects to MongoDB and starts listening
 │   └── .env.example
+├── api/index.js            # Vercel serverless entry (wraps server/app.js)
+├── vercel.json             # Vercel build + routing settings
+├── render.yaml             # Render blueprint (alternative host)
 └── client/
     ├── public/             # put karunya-logo.png here
     └── src/
@@ -111,7 +114,7 @@ They start the real app on a free port and run three suites in `server/tests/`:
 | Suite | Covers |
 |-------|--------|
 | `api.test.js` | sign-up/login, validation, role protection (User gets 403), CRUD for buses/routes/schedules/users, stats |
-| `map.test.js` | stop coordinates, simulated bus positions, GPS location updates |
+| `map.test.js` | stop coordinates, demo bus positions, GPS location updates |
 | `security.test.js` | helmet headers and login rate limiting |
 
 ### Test accounts (after seeding)
@@ -156,11 +159,12 @@ on the landing page. Until then a plain bus icon is shown. The slot is in `clien
   its numbered stops and the campus marker, and click a bus for driver details. Positions refresh every 8 seconds.
 - The route detail page has the same map for just that route.
 - Admins can set optional **latitude / longitude** for each stop in Operations → Routes.
-- **Bus positions are a DEMO.** The buses have no GPS trackers, so `server/services/trackingSimulator.js` slides each
-  Active bus back and forth along its route and the map labels these as demo positions. Set
-  `SIMULATE_BUS_TRACKING=false` in `server/.env` to turn it off.
+- **Bus positions are a DEMO.** The buses have no GPS trackers, so `server/services/busPosition.js` calculates, from
+  the clock, a position that slides each Active bus back and forth along its route, and the map labels these as demo
+  positions. Nothing is stored and no background process is needed. Set `SIMULATE_BUS_TRACKING=false` in
+  `server/.env` to turn it off.
 - A real tracker (or an admin) can report a position with `PUT /api/buses/:id/location` (`{ "lat": 10.95, "lng": 76.8 }`).
-  While that GPS position is under 2 minutes old the simulator leaves the bus alone, and the map shows it as GPS.
+  While that GPS position is under 2 minutes old, the map shows it (labelled as GPS) instead of the demo position.
 - Stop coordinates in the seed data are **approximate sample values**, and route lines are straight segments between
   stops (not road-following). Correct them with real positions from the Transport Office.
 
@@ -225,10 +229,12 @@ Request → cors/json → router → protect (verify JWT) → authorize('Admin')
 
 ---
 
-## Deployment (free: MongoDB Atlas + Render)
+## Deployment (free: MongoDB Atlas + Vercel, or Render)
 
-The whole project runs as **one web service**: in production the Express server also serves the built React site
-(`client/dist`), so there is one URL and no CORS setup. The database is **MongoDB Atlas** (free M0 cluster).
+The database is **MongoDB Atlas** (free M0 cluster). The app can be hosted two ways, both with a single URL and no
+CORS setup:
+- **Vercel** (`vercel.json` + `api/index.js`): the React site is static files and the Express API runs as a serverless function.
+- **Render** (`render.yaml`): one web service where Express also serves the built React site (`client/dist`).
 
 ### 1. Database - MongoDB Atlas
 1. Create a free account at https://www.mongodb.com/cloud/atlas and create a free **M0** cluster (pick a nearby region, e.g. Mumbai).
@@ -252,7 +258,28 @@ Then add the real buses, routes and schedules from the **Operations** page after
 Create a (private) GitHub repository and push this project. `.env`, `node_modules` and `client/dist` are git-ignored.
 To show the Karunya logo online, add `client/public/karunya-logo.png` before pushing.
 
-### 4. Host - Render
+### 4. Host - Vercel
+1. Sign in at https://vercel.com with GitHub → **Add New → Project** → import the `BUS-TRACKING` repository.
+2. Leave **Root Directory** empty and the framework as **Other**. `vercel.json` already sets the install command,
+   build command (`client/dist`) and the `/api` routing.
+3. Add these **Environment Variables** before deploying:
+
+   | Name | Value |
+   |------|-------|
+   | `MONGO_URI` | your Atlas connection string |
+   | `JWT_SECRET` | a long random string, e.g. from `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
+   | `ADMIN_SIGNUP_CODE` | your own secret code (not the one in `.env.example`) |
+   | `JWT_EXPIRES_IN` | `1d` |
+   | `SIMULATE_BUS_TRACKING` | `true` (demo bus movement) or `false` |
+
+4. Click **Deploy**. The site is at `https://<project>.vercel.app`.
+
+Notes for Vercel: the API runs as short-lived functions, so the demo bus positions are calculated from the clock at
+request time (no background process), and the login rate limiter counts failed attempts per running function
+instance, which is weaker than on a single always-on server. Atlas must allow `0.0.0.0/0` (step 1) because Vercel has
+no fixed IP address.
+
+### 4b. Alternative host - Render
 1. Sign in at https://render.com with GitHub → **New → Blueprint** → pick the repository (it reads `render.yaml`).
 2. When asked, set **`MONGO_URI`** (the Atlas string) and **`ADMIN_SIGNUP_CODE`** (your own secret code for Admin sign-up).
    `JWT_SECRET` is generated automatically.

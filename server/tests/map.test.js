@@ -1,10 +1,7 @@
-// Map / tracking suite: stop coordinates, simulated bus positions, GPS updates.
-// Needs the tracking simulator running (the runner starts it).
+// Map / tracking suite: stop coordinates, simulated (demo) bus positions, GPS updates.
 module.exports = async ({ req, login, sleep, check }) => {
   const admin = await login('admin@karunya.edu.in', 'Admin@123');
   const student = await login('student@karunya.edu.in', 'Student@123');
-
-  await sleep(6000); // let the simulator write the first positions
 
   let r = await req('GET', '/tracking');
   check('tracking needs login 401', r.s === 401);
@@ -32,7 +29,7 @@ module.exports = async ({ req, login, sleep, check }) => {
   await sleep(6000);
   r = await req('GET', '/tracking', null, student);
   const pos2 = r.j.data.find((x) => x._id === sample._id).assignedBus.location;
-  check('bus moved after one simulator tick', pos1.lat !== pos2.lat || pos1.lng !== pos2.lng, JSON.stringify([pos1, pos2]));
+  check('bus position changes over time', pos1.lat !== pos2.lat || pos1.lng !== pos2.lng, JSON.stringify([pos1, pos2]));
 
   r = await req('GET', '/routes/' + sample._id, null, student);
   check('route detail includes bus location', r.s === 200 && Number.isFinite(r.j.data.assignedBus.location.lat));
@@ -48,7 +45,7 @@ module.exports = async ({ req, login, sleep, check }) => {
   await sleep(6000);
   r = await req('GET', '/tracking', null, student);
   const after = r.j.data.find((x) => x._id === sample._id).assignedBus.location;
-  check('simulator leaves a fresh GPS position alone', after.source === 'gps' && after.lat === 11.0123, JSON.stringify(after));
+  check('a fresh GPS position overrides the simulation', after.source === 'gps' && after.lat === 11.0123, JSON.stringify(after));
 
   // ---------- Stop coordinates on routes ----------
   const body = {

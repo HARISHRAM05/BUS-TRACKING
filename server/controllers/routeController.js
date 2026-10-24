@@ -7,6 +7,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const respond = require('../utils/respond');
 const logActivity = require('../utils/logActivity');
 const { containsRegex } = require('../utils/escapeRegex');
+const { withLiveLocation } = require('../services/busPosition');
 
 const BUS_FIELDS = 'busNumber registrationNo capacity driverName driverPhone status location';
 
@@ -50,7 +51,7 @@ const getRoutes = asyncHandler(async (req, res) => {
   }
 
   const routes = await Route.find(filter).populate('assignedBus', BUS_FIELDS).sort({ routeCode: 1 });
-  respond(res, 200, 'Routes fetched', routes);
+  respond(res, 200, 'Routes fetched', routes.map(withLiveLocation));
 });
 
 // GET /api/routes/:id  (includes the schedules running on this route)
@@ -62,7 +63,7 @@ const getRoute = asyncHandler(async (req, res) => {
     .populate('bus', BUS_FIELDS)
     .sort({ shift: 1, departureTime: 1 });
 
-  respond(res, 200, 'Route fetched', { ...route.toObject(), schedules });
+  respond(res, 200, 'Route fetched', { ...withLiveLocation(route), schedules });
 });
 
 // POST /api/routes
