@@ -168,10 +168,7 @@ const RouteDetail = () => {
                   <tbody>
                     {route.schedules.map((s) => (
                       <tr key={s._id}>
-                        <td>
-                          <i className={`bi ${s.shift === 'Morning' ? 'bi-sunrise text-warning' : 'bi-sunset text-danger'} me-1`} />
-                          {s.shift}
-                        </td>
+                        <td>{s.shift}</td>
                         <td>{s.direction}</td>
                         <td className="fw-semibold">{to12h(s.departureTime)}</td>
                         <td>{to12h(s.arrivalTime)}</td>

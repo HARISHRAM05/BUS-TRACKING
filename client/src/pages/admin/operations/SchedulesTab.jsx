@@ -100,10 +100,7 @@ const SchedulesTab = () => {
                       <span className="small">{s.route?.routeName}</span>
                     </td>
                     <td>{s.bus?.busNumber}</td>
-                    <td>
-                      <i className={`bi ${s.shift === 'Morning' ? 'bi-sunrise text-warning' : 'bi-sunset text-danger'} me-1`} />
-                      {s.shift}
-                    </td>
+                    <td>{s.shift}</td>
                     <td className="small">{s.direction}</td>
                     <td>{to12h(s.departureTime)}</td>
                     <td>{to12h(s.arrivalTime)}</td>

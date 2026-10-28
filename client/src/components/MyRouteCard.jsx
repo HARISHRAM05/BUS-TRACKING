@@ -177,7 +177,6 @@ const MyRouteCard = () => {
                         className={`list-group-item px-0 d-flex justify-content-between align-items-center gap-2 ${i === 0 ? 'next-bus-first' : ''}`}
                       >
                         <span>
-                          <i className={`bi ${d.shift === 'Morning' ? 'bi-sunrise text-warning' : 'bi-sunset text-danger'} me-2`} />
                           <strong className={i === 0 ? 'fs-5' : ''}>{to12h(d.time)}</strong>
                           <span className="text-muted small ms-2">
                             {d.dayLabel} · {d.direction}
