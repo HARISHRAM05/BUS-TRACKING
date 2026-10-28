@@ -68,7 +68,10 @@ const fail = (message) => {
     performedByName: 'System',
   });
 
-  console.log(`\n✅ Added ${counts.buses} buses, ${counts.routes} routes and ${counts.schedules} schedules to ${target}.`);
+  console.log(
+    `\n✅ Added ${counts.buses} buses, ${counts.routes} routes, ${counts.schedules} schedules and ` +
+      `${counts.announcements} sample announcements to ${target}.`
+  );
   console.log('   These are SAMPLE records. Replace them with real data from Admin > Operations.\n');
 
   await mongoose.disconnect();

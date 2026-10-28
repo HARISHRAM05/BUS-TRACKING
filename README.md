@@ -115,6 +115,7 @@ They start the real app on a free port and run three suites in `server/tests/`:
 |-------|--------|
 | `api.test.js` | sign-up/login, validation, role protection (User gets 403), CRUD for buses/routes/schedules/users, stats |
 | `map.test.js` | stop coordinates, demo bus positions, GPS location updates |
+| `features.test.js` | next-bus calculation at fixed clock times, My Route, announcements, rider reports |
 | `security.test.js` | helmet headers and login rate limiting |
 
 ### Test accounts (after seeding)
@@ -168,6 +169,22 @@ on the landing page. Until then a plain bus icon is shown. The slot is in `clien
 - Stop coordinates in the seed data are **approximate sample values**, and route lines are straight segments between
   stops (not road-following). Correct them with real positions from the Transport Office.
 
+### Rider tools (students and staff)
+- **My bus / next bus** (top of the dashboard): save your usual route and boarding stop once. The card then shows the
+  next buses at *your* stop with a countdown ("in 12 min"), the day for later ones, and how far the bus is from your
+  stop right now. Times come from the timetable and always use **India time**, wherever the server runs. Evening times
+  at a stop are estimated from the morning timetable (the same road in reverse). The logic is in
+  `server/services/nextBus.js` and is unit-tested at fixed clock times.
+- **Announcements:** the Transport Office posts notices (Info / Warning / Urgent), for everyone or for one route, with an
+  optional "hide after" date. Riders see them as banners on the dashboard, the map and the route page (Urgent first) and
+  can dismiss them. Expired notices disappear on their own.
+- **Report a problem** (`/report`): riders report a late bus, overcrowding, a breakdown, driver behaviour, a safety
+  concern or lost property, optionally for one route, and follow the status and the Transport Office's reply. Each rider
+  can have at most 10 unresolved reports.
+- **Admin side:** Operations → **Announcements** (post, edit, remove, see expired) and **Reports** (inbox with status
+  filter, set Open / In progress / Resolved, write a reply). The admin home shows open reports and active notices.
+- Deleting a route also clears riders' saved route and removes that route's notices.
+
 ### User (Student / Staff)
 - View-only dashboard with Routes, Schedules and Buses tabs.
 - Filter by route name/code, stop name, bus number, shift, direction and day (with a "Today" shortcut).
@@ -215,7 +232,16 @@ Every response has the same shape:
 | DELETE | `/users/:id` | Admin | cannot delete yourself |
 | PUT | `/buses/:id/location` | Admin | `{ lat, lng }` - report the bus position (GPS) |
 | GET | `/tracking` | Logged in | routes with stop coordinates + assigned bus and its last location |
-| GET | `/stats` | Admin | dashboard counts |
+| GET | `/announcements` | Logged in | active notices; `?route=` for one route; `?all=true` (Admin) includes expired |
+| POST / PUT / DELETE | `/announcements`, `/announcements/:id` | Admin | `{ title, message, severity, route?, expiresAt? }` |
+| PUT | `/me/route` | Logged in | `{ routeId, stopName }` - save "my route" |
+| DELETE | `/me/route` | Logged in | remove the saved route |
+| GET | `/me/next-bus` | Logged in | next buses at my stop + live distance (`null` if no route saved) |
+| POST | `/issues` | Logged in | `{ category, route?, message }` - report a problem |
+| GET | `/issues/mine` | Logged in | the rider's own reports with status and reply |
+| GET | `/issues` | Admin | inbox; `?status=&category=` |
+| PUT / DELETE | `/issues/:id` | Admin | `{ status, adminNote }` / delete |
+| GET | `/stats` | Admin | dashboard counts (incl. open reports, active notices) |
 | GET | `/activity` | Admin | `?limit=10` recent activity |
 
 **Status codes used:** 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found,

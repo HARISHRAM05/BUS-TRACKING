@@ -46,6 +46,9 @@ app.use('/api/routes', require('./routes/routeRoutes'));
 app.use('/api/schedules', require('./routes/scheduleRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/tracking', require('./routes/trackingRoutes'));
+app.use('/api/announcements', require('./routes/announcementRoutes'));
+app.use('/api/issues', require('./routes/issueRoutes'));
+app.use('/api/me', require('./routes/meRoutes'));
 app.use('/api', require('./routes/dashboardRoutes')); // /api/stats, /api/activity
 
 // ---------- Website (production) ----------

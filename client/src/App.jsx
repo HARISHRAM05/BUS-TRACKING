@@ -16,6 +16,7 @@ import UserManagement from './pages/admin/UserManagement';
 import UserDashboard from './pages/user/UserDashboard';
 import RouteDetail from './pages/user/RouteDetail';
 import LiveMap from './pages/user/LiveMap';
+import ReportIssue from './pages/user/ReportIssue';
 
 const App = () => (
   <>
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/routes/:id" element={<RouteDetail />} />
           <Route path="/track" element={<LiveMap />} />
+          <Route path="/report" element={<ReportIssue />} />
           <Route path="/change-password" element={<ChangePassword />} />
         </Route>
 

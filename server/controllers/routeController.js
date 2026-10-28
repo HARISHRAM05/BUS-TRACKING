@@ -2,6 +2,9 @@
 const Route = require('../models/Route');
 const Bus = require('../models/Bus');
 const Schedule = require('../models/Schedule');
+const User = require('../models/User');
+const Announcement = require('../models/Announcement');
+const Issue = require('../models/Issue');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const respond = require('../utils/respond');
@@ -98,6 +101,12 @@ const deleteRoute = asyncHandler(async (req, res) => {
   if (!route) throw new ApiError(404, 'Route not found');
 
   const { deletedCount } = await Schedule.deleteMany({ route: route._id });
+  // clean up everything that pointed at this route
+  await Promise.all([
+    User.updateMany({ myRoute: route._id }, { myRoute: null, myStop: '' }),
+    Announcement.deleteMany({ route: route._id }),
+    Issue.updateMany({ route: route._id }, { route: null }),
+  ]);
   await route.deleteOne();
   await logActivity(req.user, 'Route', `Deleted route ${route.routeCode} and ${deletedCount} schedule(s)`);
   respond(res, 200, `Route deleted along with ${deletedCount} schedule(s)`);

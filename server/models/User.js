@@ -19,6 +19,9 @@ const userSchema = new mongoose.Schema(
     userType: { type: String, enum: ['Student', 'Staff', null], default: null },
     registerNo: { type: String, trim: true, default: '' },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+    // "My Route": the rider's usual route and boarding stop (used for the Next Bus card)
+    myRoute: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', default: null },
+    myStop: { type: String, trim: true, default: '' },
   },
   { timestamps: true } // adds createdAt and updatedAt
 );

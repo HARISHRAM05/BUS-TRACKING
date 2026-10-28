@@ -1,6 +1,8 @@
 // express-validator rule sets for every endpoint that accepts input
 const { body, param, query } = require('express-validator');
 const { DAYS } = require('../models/Schedule');
+const { SEVERITIES } = require('../models/Announcement');
+const { CATEGORIES, STATUSES: ISSUE_STATUSES } = require('../models/Issue');
 
 // Min 8 chars with at least one uppercase, lowercase, number and special character
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
@@ -176,8 +178,61 @@ const userQueryRules = [
   query('status').optional().isIn(['active', 'inactive']).withMessage('Invalid status'),
 ];
 
+// ---------- Announcements ----------
+const announcementRules = [
+  body('title')
+    .trim()
+    .notEmpty().withMessage('Title is required').bail()
+    .isLength({ min: 3, max: 100 }).withMessage('Title must be 3-100 characters'),
+  body('message')
+    .trim()
+    .notEmpty().withMessage('Message is required').bail()
+    .isLength({ min: 5, max: 500 }).withMessage('Message must be 5-500 characters'),
+  body('severity').isIn(SEVERITIES).withMessage('Choose Info, Warning or Urgent'),
+  body('route').optional({ values: 'falsy' }).isMongoId().withMessage('Invalid route'),
+  body('expiresAt').optional({ values: 'falsy' }).isISO8601().withMessage('Enter a valid expiry date').toDate(),
+];
+
+const announcementQueryRules = [
+  query('search').optional().isString().isLength({ max: 50 }).withMessage('Search text is too long'),
+  query('route').optional().isMongoId().withMessage('Invalid route'),
+  query('all').optional().isBoolean().withMessage('Invalid value'),
+];
+
+// ---------- Rider reports (issues) ----------
+const reportRules = [
+  body('category').isIn(CATEGORIES).withMessage('Choose what the problem is about'),
+  body('route').optional({ values: 'falsy' }).isMongoId().withMessage('Invalid route'),
+  body('message')
+    .trim()
+    .notEmpty().withMessage('Please describe the problem').bail()
+    .isLength({ min: 10, max: 600 }).withMessage('Please write 10-600 characters'),
+];
+
+const issueUpdateRules = [
+  body('status').isIn(ISSUE_STATUSES).withMessage('Invalid status'),
+  body('adminNote').optional({ values: 'falsy' }).trim().isLength({ max: 300 }).withMessage('Reply must be at most 300 characters'),
+];
+
+const issueQueryRules = [
+  query('status').optional().isIn(ISSUE_STATUSES).withMessage('Invalid status'),
+  query('category').optional().isIn(CATEGORIES).withMessage('Invalid category'),
+];
+
+// ---------- My Route ----------
+const myRouteRules = [
+  body('routeId').isMongoId().withMessage('Select a route'),
+  body('stopName').trim().notEmpty().withMessage('Select your boarding stop'),
+];
+
 module.exports = {
   PASSWORD_REGEX,
+  announcementRules,
+  announcementQueryRules,
+  reportRules,
+  issueUpdateRules,
+  issueQueryRules,
+  myRouteRules,
   busQueryRules,
   routeQueryRules,
   scheduleQueryRules,

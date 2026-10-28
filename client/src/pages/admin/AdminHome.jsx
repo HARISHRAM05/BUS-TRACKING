@@ -13,6 +13,8 @@ const CAPABILITIES = [
   { icon: 'bi-signpost-split', title: 'Manage routes', text: 'Create routes with ordered stops and pickup times, and assign a bus.', to: '/admin/operations?tab=routes' },
   { icon: 'bi-calendar-week', title: 'Manage schedules', text: 'Set morning and evening trips, directions and days of operation.', to: '/admin/operations?tab=schedules' },
   { icon: 'bi-people', title: 'Manage users', text: 'Add students, staff and admins, change roles or deactivate accounts.', to: '/admin/users' },
+  { icon: 'bi-megaphone', title: 'Post notices', text: 'Warn riders about delays, route changes or holidays. Notices show as banners.', to: '/admin/operations?tab=announcements' },
+  { icon: 'bi-flag', title: 'Rider reports', text: 'Read problems reported by students and staff, and reply to them.', to: '/admin/operations?tab=reports' },
 ];
 
 const ENTITY_ICON = { Bus: 'bi-bus-front', Route: 'bi-signpost-split', Schedule: 'bi-calendar-week', User: 'bi-person', Auth: 'bi-shield-check' };
@@ -48,17 +50,27 @@ const AdminHome = () => {
       ) : (
         <>
           <div className="row g-3 mb-4">
-            <div className="col-6 col-lg-3">
+            <div className="col-6 col-lg-4 col-xl-2">
               <StatCard icon="bi-bus-front" label="Total buses" value={stats?.buses} sub={`${stats?.activeBuses ?? 0} active`} />
             </div>
-            <div className="col-6 col-lg-3">
+            <div className="col-6 col-lg-4 col-xl-2">
               <StatCard icon="bi-signpost-split" label="Routes" value={stats?.routes} />
             </div>
-            <div className="col-6 col-lg-3">
+            <div className="col-6 col-lg-4 col-xl-2">
               <StatCard icon="bi-calendar-week" label="Schedules" value={stats?.schedules} />
             </div>
-            <div className="col-6 col-lg-3">
+            <div className="col-6 col-lg-4 col-xl-2">
               <StatCard icon="bi-people" label="Users" value={stats?.users} sub={`${stats?.admins ?? 0} admin(s)`} />
+            </div>
+            <div className="col-6 col-lg-4 col-xl-2">
+              <Link to="/admin/operations?tab=reports" className="text-decoration-none text-body">
+                <StatCard icon="bi-flag" label="Open reports" value={stats?.openReports} sub="from riders" />
+              </Link>
+            </div>
+            <div className="col-6 col-lg-4 col-xl-2">
+              <Link to="/admin/operations?tab=announcements" className="text-decoration-none text-body">
+                <StatCard icon="bi-megaphone" label="Active notices" value={stats?.announcements} />
+              </Link>
             </div>
           </div>
 

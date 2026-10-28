@@ -5,6 +5,8 @@ import { busApi, routeApi, scheduleApi, getErrorMessage } from '../../services/a
 import { useAuth } from '../../context/AuthContext';
 import useDebounce from '../../utils/useDebounce';
 import { BUS_STATUS_BADGE, DAYS, formatDays, to12h } from '../../utils/format';
+import AnnouncementBanner from '../../components/AnnouncementBanner';
+import MyRouteCard from '../../components/MyRouteCard';
 import Loader from '../../components/Loader';
 import EmptyState from '../../components/EmptyState';
 
@@ -54,6 +56,9 @@ const UserDashboard = () => {
           Hello {user.name.split(' ')[0]}! Find your college bus between Coimbatore and Karunya Nagar campus.
         </p>
       </div>
+
+      <AnnouncementBanner />
+      <MyRouteCard />
 
       {/* ---------- Filters ---------- */}
       <div className="card mb-3">

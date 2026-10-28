@@ -80,6 +80,33 @@ export const validateUser = (v, isEdit) => {
   return e;
 };
 
+export const validateAnnouncement = (v) => {
+  const e = {};
+  if (isBlank(v.title)) e.title = 'Title is required';
+  else if (v.title.trim().length < 3 || v.title.trim().length > 100) e.title = 'Title must be 3-100 characters';
+  if (isBlank(v.message)) e.message = 'Message is required';
+  else if (v.message.trim().length < 5 || v.message.trim().length > 500) e.message = 'Message must be 5-500 characters';
+  if (!['Info', 'Warning', 'Urgent'].includes(v.severity)) e.severity = 'Choose Info, Warning or Urgent';
+  if (!isBlank(v.expiresOn) && Number.isNaN(new Date(`${v.expiresOn}T00:00:00`).getTime())) e.expiresOn = 'Enter a valid date';
+  return e;
+};
+
+export const validateReport = (v) => {
+  const e = {};
+  if (isBlank(v.category)) e.category = 'Choose what the problem is about';
+  if (isBlank(v.message)) e.message = 'Please describe the problem';
+  else if (v.message.trim().length < 10) e.message = 'Please write at least 10 characters';
+  else if (v.message.trim().length > 600) e.message = 'Please keep it under 600 characters';
+  return e;
+};
+
+export const validateIssueUpdate = (v) => {
+  const e = {};
+  if (!['Open', 'In progress', 'Resolved'].includes(v.status)) e.status = 'Choose a status';
+  if ((v.adminNote || '').length > 300) e.adminNote = 'Reply must be at most 300 characters';
+  return e;
+};
+
 export const validateBus = (v) => {
   const e = {};
   if (isBlank(v.busNumber)) e.busNumber = 'Bus number is required';

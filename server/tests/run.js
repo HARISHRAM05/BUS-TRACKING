@@ -34,7 +34,7 @@ const { seedDatabase } = require('../seed');
 const { createClient, createChecker } = require('./helpers');
 
 // Order matters: security runs last because it gets this IP rate limited
-const SUITES = ['api', 'map', 'security'];
+const SUITES = ['api', 'map', 'features', 'security'];
 
 (async () => {
   await mongoose.connect(TEST_URI);

@@ -21,7 +21,37 @@ export const TextField = ({ label, name, value, onChange, error, type = 'text', 
   </div>
 );
 
-export const SelectField = ({ label, name, value, onChange, error, options, placeholder, required, ...rest }) => (
+export const TextAreaField = ({ label, name, value, onChange, error, required, hint, rows = 3, maxLength, ...rest }) => (
+  <div className="mb-3">
+    {label && (
+      <label htmlFor={name} className="form-label">
+        {label} {required && <span className="text-danger">*</span>}
+      </label>
+    )}
+    <textarea
+      id={name}
+      name={name}
+      rows={rows}
+      maxLength={maxLength}
+      className={`form-control ${error ? 'is-invalid' : ''}`}
+      value={value ?? ''}
+      onChange={onChange}
+      {...rest}
+    />
+    {error ? (
+      <div className="invalid-feedback">{error}</div>
+    ) : (
+      (hint || maxLength) && (
+        <div className="form-text d-flex justify-content-between">
+          <span>{hint}</span>
+          {maxLength && <span>{(value ?? '').length}/{maxLength}</span>}
+        </div>
+      )
+    )}
+  </div>
+);
+
+export const SelectField =({ label, name, value, onChange, error, options, placeholder, required, ...rest }) => (
   <div className="mb-3">
     {label && (
       <label htmlFor={name} className="form-label">

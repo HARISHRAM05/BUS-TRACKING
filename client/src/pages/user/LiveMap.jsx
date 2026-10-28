@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import useLiveTracking from '../../utils/useLiveTracking';
 import { BUS_STATUS_BADGE, timeAgo } from '../../utils/format';
 import BusMap from '../../components/BusMap';
+import AnnouncementBanner from '../../components/AnnouncementBanner';
 import Loader from '../../components/Loader';
 import EmptyState from '../../components/EmptyState';
 
@@ -27,6 +28,8 @@ const LiveMap = () => {
           </button>
         )}
       </div>
+
+      <AnnouncementBanner />
 
       {isDemo && (
         <div className="alert alert-info py-2 small">

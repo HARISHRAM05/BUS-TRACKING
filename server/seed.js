@@ -17,6 +17,8 @@ const Bus = require('./models/Bus');
 const Route = require('./models/Route');
 const Schedule = require('./models/Schedule');
 const ActivityLog = require('./models/ActivityLog');
+const Announcement = require('./models/Announcement');
+const Issue = require('./models/Issue');
 
 const CAMPUS = 'Karunya Nagar Campus';
 
@@ -147,6 +149,7 @@ const loadTransportData = async () => {
   const busByNumber = Object.fromEntries(createdBuses.map((b) => [b.busNumber, b]));
 
   const scheduleDocs = [];
+  const routeByCode = {};
   for (const [i, r] of routes.entries()) {
     const bus = r.bus ? busByNumber[r.bus] : null;
     const route = await Route.create({
@@ -161,6 +164,8 @@ const loadTransportData = async () => {
         return { stopName, pickupTime, order: idx + 1, lat, lng };
       }),
     });
+
+    routeByCode[r.routeCode] = route;
 
     if (!bus) continue; // a route without a bus gets no schedules yet
 
@@ -183,7 +188,30 @@ const loadTransportData = async () => {
   }
   await Schedule.insertMany(scheduleDocs);
 
-  return { buses: createdBuses.length, routes: routes.length, schedules: scheduleDocs.length };
+  // SAMPLE announcements (they expire after 30 days) so the banner has something to show
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const announcements = await Announcement.insertMany([
+    {
+      title: 'Welcome to the Karunya Bus Portal (sample notice)',
+      message: 'Save your usual route and boarding stop under "My bus" to see when your next bus arrives. This is a sample notice.',
+      severity: 'Info',
+      expiresAt,
+    },
+    {
+      title: 'R04 Singanallur: bus leaves 10 minutes early (sample notice)',
+      message: 'Sample notice for demonstration: please be at your stop 10 minutes earlier on Monday.',
+      severity: 'Warning',
+      route: routeByCode.R04._id,
+      expiresAt,
+    },
+  ]);
+
+  return {
+    buses: createdBuses.length,
+    routes: routes.length,
+    schedules: scheduleDocs.length,
+    announcements: announcements.length,
+  };
 };
 
 // Wipes the database and loads ALL the sample data, including the sample accounts.
@@ -195,6 +223,8 @@ const seedDatabase = async () => {
     Bus.deleteMany(),
     Route.deleteMany(),
     Schedule.deleteMany(),
+    Announcement.deleteMany(),
+    Issue.deleteMany(),
     ActivityLog.deleteMany(),
   ]);
 

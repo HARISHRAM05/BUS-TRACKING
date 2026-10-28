@@ -52,6 +52,15 @@ export const busApi = crud('/buses');
 export const routeApi = crud('/routes');
 export const scheduleApi = crud('/schedules');
 export const userApi = crud('/users');
+export const announcementApi = crud('/announcements');
+export const issueApi = { ...crud('/issues'), mine: () => data(api.get('/issues/mine')) };
+
+// "My Route": the saved route + stop, and the next buses computed from it
+export const meApi = {
+  next: () => data(api.get('/me/next-bus')),
+  setRoute: (body) => withMessage(api.put('/me/route', body)),
+  clearRoute: () => withMessage(api.delete('/me/route')),
+};
 
 // Routes + stop coordinates + assigned bus (with last known location) for the map
 export const trackingApi = {

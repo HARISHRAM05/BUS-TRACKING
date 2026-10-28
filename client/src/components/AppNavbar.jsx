@@ -15,6 +15,7 @@ const ADMIN_LINKS = [
 const USER_LINKS = [
   { to: '/dashboard', label: 'Dashboard', icon: 'bi-grid' },
   { to: '/track', label: 'Live Map', icon: 'bi-map' },
+  { to: '/report', label: 'Report', icon: 'bi-flag' },
 ];
 
 const AppNavbar = () => {

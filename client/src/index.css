@@ -207,6 +207,17 @@ main {
   border-left: 4px solid var(--ku-blue);
 }
 
+/* ---------- My bus / next bus ---------- */
+.my-bus-card {
+  border-left: 4px solid var(--ku-blue);
+}
+.next-bus-first {
+  background: var(--ku-blue-light);
+  border-radius: 0.375rem;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+
 .toast-stack {
   position: fixed;
   top: 1rem;

@@ -5,6 +5,7 @@ import { routeApi, getErrorMessage } from '../../services/api';
 import { BUS_STATUS_BADGE, formatDays, to12h } from '../../utils/format';
 import useLiveTracking from '../../utils/useLiveTracking';
 import BusMap from '../../components/BusMap';
+import AnnouncementBanner from '../../components/AnnouncementBanner';
 import Loader from '../../components/Loader';
 import EmptyState from '../../components/EmptyState';
 
@@ -48,6 +49,10 @@ const RouteDetail = () => {
       <Link to="/dashboard" className="small text-decoration-none">
         <i className="bi bi-arrow-left me-1" />Back to all routes
       </Link>
+
+      <div className="mt-3">
+        <AnnouncementBanner routeId={route._id} />
+      </div>
 
       <div className="d-flex flex-wrap align-items-center gap-2 mt-2 mb-4">
         <span className="badge bg-ku fs-6">{route.routeCode}</span>

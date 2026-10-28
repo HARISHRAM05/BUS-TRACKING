@@ -4,20 +4,26 @@ const Route = require('../models/Route');
 const Schedule = require('../models/Schedule');
 const User = require('../models/User');
 const ActivityLog = require('../models/ActivityLog');
+const Announcement = require('../models/Announcement');
+const Issue = require('../models/Issue');
 const asyncHandler = require('../utils/asyncHandler');
 const respond = require('../utils/respond');
 
 // GET /api/stats
 const getStats = asyncHandler(async (req, res) => {
-  const [buses, activeBuses, routes, schedules, users, admins] = await Promise.all([
+  const [buses, activeBuses, routes, schedules, users, admins, openReports, announcements] = await Promise.all([
     Bus.countDocuments(),
     Bus.countDocuments({ status: 'Active' }),
     Route.countDocuments(),
     Schedule.countDocuments(),
     User.countDocuments(),
     User.countDocuments({ role: 'Admin' }),
+    Issue.countDocuments({ status: 'Open' }),
+    Announcement.countDocuments({ $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }] }),
   ]);
-  respond(res, 200, 'Stats fetched', { buses, activeBuses, routes, schedules, users, admins });
+  respond(res, 200, 'Stats fetched', {
+    buses, activeBuses, routes, schedules, users, admins, openReports, announcements,
+  });
 });
 
 // GET /api/activity?limit=10

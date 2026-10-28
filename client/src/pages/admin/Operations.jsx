@@ -3,11 +3,15 @@ import { useSearchParams } from 'react-router-dom';
 import BusesTab from './operations/BusesTab';
 import RoutesTab from './operations/RoutesTab';
 import SchedulesTab from './operations/SchedulesTab';
+import AnnouncementsTab from './operations/AnnouncementsTab';
+import ReportsTab from './operations/ReportsTab';
 
 const TABS = [
   { key: 'buses', label: 'Buses', icon: 'bi-bus-front', Component: BusesTab },
   { key: 'routes', label: 'Routes', icon: 'bi-signpost-split', Component: RoutesTab },
   { key: 'schedules', label: 'Schedules', icon: 'bi-calendar-week', Component: SchedulesTab },
+  { key: 'announcements', label: 'Announcements', icon: 'bi-megaphone', Component: AnnouncementsTab },
+  { key: 'reports', label: 'Reports', icon: 'bi-flag', Component: ReportsTab },
 ];
 
 const Operations = () => {
@@ -18,7 +22,7 @@ const Operations = () => {
   return (
     <div className="container py-4">
       <h1 className="h3 fw-bold text-ku mb-1">Operations</h1>
-      <p className="text-muted">Add, update and remove buses, routes and schedules.</p>
+      <p className="text-muted">Manage buses, routes and schedules, post notices to riders, and answer their reports.</p>
 
       <ul className="nav nav-tabs mb-3">
         {TABS.map((t) => (

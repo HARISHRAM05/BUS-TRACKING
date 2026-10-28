@@ -85,4 +85,4 @@ const withLiveLocation = (route) => {
   return { ...plain, assignedBus: { ...plain.assignedBus, location: liveLocation(plain, plain.assignedBus) } };
 };
 
-module.exports = { liveLocation, simulatedLocation, withLiveLocation };
+module.exports = { liveLocation, simulatedLocation, withLiveLocation, haversine };
