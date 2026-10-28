@@ -254,6 +254,15 @@ which database host it connected to, so you can confirm it is Atlas and not your
 8+ characters with uppercase, lowercase, a number and a special character.
 Then add the real buses, routes and schedules from the **Operations** page after you log in.
 
+**Optional - sample data for a demo.** To fill an empty live database with the SAMPLE buses, routes and schedules
+(no user accounts, so no public passwords end up online):
+```bash
+npm.cmd run load-sample-data
+```
+It asks for the connection string (typed hidden), shows which host it will use, asks you to type `yes`, and refuses to
+run if the database already has buses, routes or schedules. Replace the sample records with real ones from
+**Operations** before real use.
+
 ### 3. Put the code on GitHub
 Create a (private) GitHub repository and push this project. `.env`, `node_modules` and `client/dist` are git-ignored.
 To show the Karunya logo online, add `client/public/karunya-logo.png` before pushing.

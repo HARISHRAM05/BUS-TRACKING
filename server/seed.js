@@ -140,22 +140,9 @@ const minutesBetween = (a, b) => {
   return h2 * 60 + m2 - (h1 * 60 + m1);
 };
 
-// Wipes the database and loads the sample data. Assumes mongoose is already connected.
-const seedDatabase = async () => {
-  console.log('Clearing old data...');
-  await Promise.all([
-    User.deleteMany(),
-    Bus.deleteMany(),
-    Route.deleteMany(),
-    Schedule.deleteMany(),
-    ActivityLog.deleteMany(),
-  ]);
-
-  // create() one by one so the password-hashing pre-save hook runs
-  const createdUsers = [];
-  for (const u of users) createdUsers.push(await User.create(u));
-  const admin = createdUsers[0];
-
+// Adds ONLY the sample buses, routes and schedules (no users). Assumes mongoose is already connected
+// and those collections are empty. Also used by scripts/loadSampleData.js for a live (Atlas) database.
+const loadTransportData = async () => {
   const createdBuses = await Bus.insertMany(buses);
   const busByNumber = Object.fromEntries(createdBuses.map((b) => [b.busNumber, b]));
 
@@ -196,6 +183,28 @@ const seedDatabase = async () => {
   }
   await Schedule.insertMany(scheduleDocs);
 
+  return { buses: createdBuses.length, routes: routes.length, schedules: scheduleDocs.length };
+};
+
+// Wipes the database and loads ALL the sample data, including the sample accounts.
+// Assumes mongoose is already connected.
+const seedDatabase = async () => {
+  console.log('Clearing old data...');
+  await Promise.all([
+    User.deleteMany(),
+    Bus.deleteMany(),
+    Route.deleteMany(),
+    Schedule.deleteMany(),
+    ActivityLog.deleteMany(),
+  ]);
+
+  // create() one by one so the password-hashing pre-save hook runs
+  const createdUsers = [];
+  for (const u of users) createdUsers.push(await User.create(u));
+  const admin = createdUsers[0];
+
+  const counts = await loadTransportData();
+
   await ActivityLog.create({
     action: 'Database seeded with SAMPLE data',
     entity: 'Auth',
@@ -203,7 +212,7 @@ const seedDatabase = async () => {
     performedByName: 'System',
   });
 
-  return { buses: createdBuses.length, routes: routes.length, schedules: scheduleDocs.length };
+  return counts;
 };
 
 // Run directly with: npm run seed
@@ -233,4 +242,4 @@ if (require.main === module) {
 }
 
 // Used by the automated tests (server/tests)
-module.exports = { seedDatabase };
+module.exports = { seedDatabase, loadTransportData };

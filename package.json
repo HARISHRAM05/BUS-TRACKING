@@ -9,6 +9,7 @@
     "start": "npm start --prefix server",
     "render-build": "npm install --prefix server && npm install --prefix client --include=dev && npm run build --prefix client",
     "create-admin": "npm run create-admin --prefix server",
+    "load-sample-data": "npm run load-sample-data --prefix server",
     "seed": "npm run seed --prefix server",
     "test": "npm test --prefix server",
     "server": "npm run dev --prefix server",
